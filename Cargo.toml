@@ -1,0 +1,33 @@
+[package]
+name = "pidcat"
+version = "0.1.0"
+authors = ["Borney"]
+edition = "2021"
+license = "MIT"
+description = "An adb logcat wrapper and filters"
+homepage = ""
+keywords = [
+    "android",
+    "adb",
+    "logcat",
+    "log",
+    "pidcat",
+]
+readme = "README.md"
+repository = ""
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+futures = { version = "0.3", default-features = false }
+lazy_static = "1.4.0"
+dashmap = "5.4.0"
+async-stream = "0.3.5"
+clap = "4.2.7"
+async-trait = "0.1.68"
+which = "4.4.0"
+colored = "2.0.0"
+regex = "1.8.1"
+crossbeam-channel = "0.5.8"
+anyhow = "1.0.71"
+tokio = { version = "1.28.1", features = ["full"] }
