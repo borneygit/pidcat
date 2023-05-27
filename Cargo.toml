@@ -5,7 +5,7 @@ authors = ["Borney"]
 edition = "2021"
 license = "MIT"
 description = "An adb logcat wrapper and filters"
-homepage = ""
+homepage = "https://github.com/borneygit/pidcat"
 keywords = [
     "android",
     "adb",
@@ -14,7 +14,7 @@ keywords = [
     "pidcat",
 ]
 readme = "README.md"
-repository = ""
+repository = "https://github.com/borneygit/pidcat"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
