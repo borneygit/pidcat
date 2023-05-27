@@ -1,4 +1,4 @@
-#pidcat
+# pidcat
 
 During Android application development, we often want to display only the current log information of our own application. Unfortunately, since the process ID changes every time it is deployed to the phone, isn't it trying to find a log filtering tool that can solve this problem.
 
@@ -12,7 +12,7 @@ pidcat toor
 
 ![ScreenShot](/asset/screen.png)
 
-#Install
+# Install
 First install the rust environment
 ```
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -22,7 +22,7 @@ Then use cargo to install pidcat
 cargo install --path .
 ```
 
-#How to use
+# How to use
 
 ```rust
 pidcat --help
@@ -86,6 +86,6 @@ Options:
           Print version
 ```
 
-#Thanks
-https://github.com/JakeWharton/pidcat
+# Thanks
+https://github.com/JakeWharton/pidcat </br>
 https://github.com/flxo/rogcat
