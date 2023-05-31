@@ -4,11 +4,7 @@ use tokio::process::{Child, Command};
 #[tokio::main]
 async fn main() {
     let mut ps = spawn_ps().await;
-    let pids = Vec::from([
-        "launcher",
-        "com.android.phone",
-        "genymotion"
-    ]);
+    let pids = Vec::from(["launcher", "com.android.phone", "genymotion"]);
 
     let reader_task = tokio::spawn(async move {
         let mut reader = tokio::io::BufReader::new(ps.stdout.take().unwrap());
@@ -20,7 +16,7 @@ async fn main() {
             }
             let spl = line.trim().split_whitespace().collect::<Vec<&str>>();
             let name = spl[8];
-            let pid= spl[1];
+            let pid = spl[1];
             for p in pids.iter() {
                 if name.contains(p) {
                     println!("{}:{}", name, pid);
@@ -38,6 +34,5 @@ async fn spawn_ps() -> Child {
     command.stdout(std::process::Stdio::piped());
     command.arg("shell");
     command.arg("ps");
-    command.spawn()
-        .expect("Failed to execute adb shell ps")
+    command.spawn().expect("Failed to execute adb shell ps")
 }

@@ -5,21 +5,23 @@ use regex::Regex;
 use std::collections::HashMap;
 use tokio::io::AsyncBufReadExt;
 use tokio::process::{Child, Command};
-
-pub(crate) struct ADBSource {
-    device: String,
+///
+/// Used to get adb logs
+///
+pub struct ADBSource {
+    device: Option<String>,
 }
 
 impl ADBSource {
-    pub fn new(device: String) -> Self {
+    pub fn new(device: Option<String>) -> Self {
         Self { device }
     }
 
     async fn spawn_adb_logcat(&self) -> Child {
         let mut command = Command::new("adb");
         command.stdout(std::process::Stdio::piped());
-        if !self.device.is_empty() {
-            command.arg("-s").arg(&self.device);
+        if let Some(device) = &self.device {
+            command.arg("-s").arg(device);
         }
         command.arg("logcat");
         command.arg("-D");
@@ -37,16 +39,25 @@ impl Source for ADBSource {
 
         let s = stream! {
             let mut line = String::new();
-            let mut buffer = String::new();
             let mut map = HashMap::new();
 
             let re = Regex::new(r"\[ (\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}\.\d{3})\s+(\d+):(.*) ]").unwrap();
+
+            let match_buffer = |line: &str| -> Option<String> {
+                if line.starts_with("--------- beginning of")
+                    || line.starts_with("--------- switch to") {
+                    let spl = line.trim().split_whitespace().collect::<Vec<&str>>();
+                    Some(spl[3].to_string())
+                } else {
+                    None
+                }
+            };
 
             while let Ok(bytes_read) = reader.read_line(&mut line).await {
                 if bytes_read == 0 {
                     break;
                 }
-                if line.starts_with("---------") {
+                if let Some(b) =  match_buffer(&line) {
                     if map.contains_key("tag") {
                         let log = Log {
                             tag: map.remove("tag").unwrap(),
@@ -61,9 +72,7 @@ impl Source for ADBSource {
                         yield Ok(log);
                     }
 
-                    let spl = line.trim().split_whitespace().collect::<Vec<&str>>();
-                    buffer = spl[3].to_string();
-                    map.insert("buffer", buffer.clone());
+                    map.insert("buffer", b);
                 } else {
                     if let Some(cap) = re.captures(&line) {
                         if map.contains_key("tag") {

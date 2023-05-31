@@ -7,38 +7,71 @@ use std::fmt::{Display, Formatter};
 use std::pin::Pin;
 use std::str::FromStr;
 
+///
+/// Wrapping of Adb logs.
+///
 #[derive(Debug, Clone)]
-pub(crate) struct Log {
+pub struct Log {
+    /// Log date
     pub date: String,
+    /// Log time
     pub time: String,
+    /// Log pid
     pub pid: String,
+    /// Log tid
     pub tid: String,
+    /// Log level
     pub level: String,
+    /// Log tag
     pub tag: String,
+    /// Log message, stored in branches, split with '\n'
     pub message: String,
+    /// Log buffer, contains  'main', 'system', 'radio', 'events', 'crash'
     pub buffer: String,
 }
 
-pub(crate) type LogStream = Pin<Box<dyn Stream<Item = Result<Log, Box<dyn Error + Send>>> + Send>>;
+///
+/// Log out Stream
+///
+/// #Examples
+/// ```no_run
+/// let source: = ADBSource::new(None);
+/// let mut logs = source.source().await;
+/// while let Some(r) = logs.next().await {
+///     match r {
+///         Ok(log) => {
+///             println!("{}", log);
+///         }
+///         Err(_) => {}
+///     }
+/// }
+/// ```
+///
+pub type LogStream = Pin<Box<dyn Stream<Item = Result<Log, Box<dyn Error + Send>>> + Send>>;
 
 #[allow(dead_code)]
 impl Log {
+    /// log is main buffer
     pub fn is_main(&self) -> bool {
         return self.buffer == "main";
     }
 
+    /// log is system buffer
     pub fn is_system(&self) -> bool {
         return self.buffer == "system";
     }
 
+    /// log is crash buffer
     pub fn is_crash(&self) -> bool {
         return self.buffer == "crash";
     }
 
+    /// log is events buffer
     pub fn is_events(&self) -> bool {
         return self.buffer == "events";
     }
 
+    /// log is radio buffer
     pub fn is_radio(&self) -> bool {
         return self.buffer == "radio";
     }

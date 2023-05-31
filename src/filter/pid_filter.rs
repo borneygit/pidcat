@@ -15,7 +15,8 @@ pub(crate) struct PidFilter {
 }
 
 impl PidFilter {
-    pub fn new(process: Vec<String>, filter: Option<Arc<dyn Filter>>) -> Self {
+    #[allow(dead_code)]
+    pub(crate) fn new(process: Vec<String>, filter: Option<Arc<dyn Filter>>) -> Self {
         Self {
             filter,
             process: DashSet::from_iter(process.into_iter()),

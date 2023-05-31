@@ -9,25 +9,21 @@ lazy_static! {
         u8::from_str_radix(&"#ff2600"[3..5], 16).unwrap(),
         u8::from_str_radix(&"#ff2600"[5..7], 16).unwrap()
     );
-
     static ref VERBOSE: Color = Color(
         u8::from_str_radix(&"#ffffff"[1..3], 16).unwrap(),
         u8::from_str_radix(&"#ffffff"[3..5], 16).unwrap(),
         u8::from_str_radix(&"#ffffff"[5..7], 16).unwrap()
     );
-
     static ref INFO: Color = Color(
         u8::from_str_radix(&"#05d702"[1..3], 16).unwrap(),
         u8::from_str_radix(&"#05d702"[3..5], 16).unwrap(),
         u8::from_str_radix(&"#05d702"[5..7], 16).unwrap()
     );
-
     static ref WARNING: Color = Color(
         u8::from_str_radix(&"#d75f02"[1..3], 16).unwrap(),
         u8::from_str_radix(&"#d75f02"[3..5], 16).unwrap(),
         u8::from_str_radix(&"#d75f02"[5..7], 16).unwrap()
     );
-
     static ref DEBUG: Color = Color(
         u8::from_str_radix(&"#5fafff"[1..3], 16).unwrap(),
         u8::from_str_radix(&"#5fafff"[3..5], 16).unwrap(),

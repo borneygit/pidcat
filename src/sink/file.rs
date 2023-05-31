@@ -12,7 +12,8 @@ pub(crate) struct FileSink {
 }
 
 impl FileSink {
-    pub async fn new(file: PathBuf) -> Result<Self> {
+    #[allow(dead_code)]
+    pub(crate) async fn new(file: PathBuf) -> Result<Self> {
         let f = OpenOptions::new()
             .write(true)
             .truncate(true)

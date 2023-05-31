@@ -1,13 +1,13 @@
-use std::fmt::{Display, Formatter};
-use std::pin::Pin;
-use futures::{Sink, Stream, StreamExt};
 use anyhow::Result;
 use async_stream::stream;
-use std::collections::HashMap;
 use async_trait::async_trait;
+use futures::{Sink, Stream, StreamExt};
 use regex::Regex;
-use tokio::io::AsyncBufReadExt;
+use std::collections::HashMap;
 use std::error::Error;
+use std::fmt::{Display, Formatter};
+use std::pin::Pin;
+use tokio::io::AsyncBufReadExt;
 use tokio::process::{Child, Command};
 
 #[derive(Debug, Clone)]
@@ -24,11 +24,15 @@ pub(crate) struct Log {
 
 impl Display for Log {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} {} {} {} {} {} {}", self.date, self.time, self.pid, self.tid, self.level, self.tag, self.message)
+        write!(
+            f,
+            "{} {} {} {} {} {} {}",
+            self.date, self.time, self.pid, self.tid, self.level, self.tag, self.message
+        )
     }
 }
 
-type LogStream = Pin<Box<dyn Stream<Item=Result<Log, Box<dyn Error + Send>>> + Send>>;
+type LogStream = Pin<Box<dyn Stream<Item = Result<Log, Box<dyn Error + Send>>> + Send>>;
 
 #[async_trait]
 trait Source {
@@ -45,8 +49,7 @@ impl AdbSource {
         command.arg("-D");
         command.arg("-v").arg("long");
         command.arg("-b").arg("all");
-        command.spawn()
-            .expect("Failed to execute adb logcat")
+        command.spawn().expect("Failed to execute adb logcat")
     }
 }
 
@@ -55,7 +58,9 @@ impl Source for AdbSource {
     async fn source(&self) -> LogStream {
         let mut logcat = self.spawn_adb_logcat().await;
         let mut reader = tokio::io::BufReader::new(logcat.stdout.take().unwrap());
-        let re = Regex::new(r"\[ (\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}\.\d{3})\s+(\d+):\s+(\d+)\s+(.*) ]").unwrap();
+        let re =
+            Regex::new(r"\[ (\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}\.\d{3})\s+(\d+):\s+(\d+)\s+(.*) ]")
+                .unwrap();
 
         let s = stream! {
             let mut line = String::new();
@@ -125,6 +130,7 @@ async fn main() {
                 Err(_) => {}
             }
         }
-    }).await.expect("TODO: panic message");
-
+    })
+    .await
+    .expect("TODO: panic message");
 }

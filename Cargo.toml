@@ -1,6 +1,6 @@
 [package]
 name = "pidcat"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Borney"]
 edition = "2021"
 license = "MIT"
@@ -15,6 +15,14 @@ keywords = [
 ]
 readme = "README.md"
 repository = "https://github.com/borneygit/pidcat"
+
+[[bin]]
+name="pidcat"
+path="src/main.rs"
+
+[lib]
+name="pidcat"
+path="src/lib.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

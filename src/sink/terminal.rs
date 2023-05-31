@@ -50,7 +50,8 @@ pub(crate) struct TerminalSink {
 }
 
 impl TerminalSink {
-    pub fn new(color: String, tag_width: usize) -> Self {
+    #[allow(dead_code)]
+    pub(crate) fn new(color: String, tag_width: usize) -> Self {
         Self {
             color: color == "always" || color == "auto",
             tag_width,

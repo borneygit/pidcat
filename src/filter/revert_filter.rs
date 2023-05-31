@@ -11,7 +11,8 @@ pub(crate) struct RevertFilter {
 }
 
 impl RevertFilter {
-    pub fn new(revert: String, ignore: bool, filter: Option<Arc<dyn Filter>>) -> Self {
+    #[allow(dead_code)]
+    pub(crate) fn new(revert: String, ignore: bool, filter: Option<Arc<dyn Filter>>) -> Self {
         Self {
             filter,
             revert: revert.clone(),

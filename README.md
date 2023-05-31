@@ -12,7 +12,7 @@ pidcat toor
 
 ![ScreenShot](/asset/screen.png)
 
-# Install
+# Install terminal
 First install the rust environment
 ```
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -22,7 +22,7 @@ Then use cargo to install pidcat
 cargo install --path .
 ```
 
-# How to use
+# How to use terminal
 
 ```rust
 pidcat --help
@@ -84,6 +84,32 @@ Options:
 
   -V, --version
           Print version
+```
+
+# Use by crate
+add dep for Cargo.toml
+```
+[dependencies]
+pidcat="0.2.0"
+```
+You can use the following code to capture the adb logcat logs and process them twice according to your needs
+```rust
+use futures::StreamExt;
+use pidcat::LogStream;
+use pidcat::source::*;
+
+#[tokio::main]
+async fn main() {
+    let source = ADBSource::new(None);
+
+    let mut logs: LogStream = source.source().await;
+
+    while let Some(r) = logs.next().await {
+        if let Ok(log) = r {
+            println!("{}", log);
+        }
+    }
+}
 ```
 
 # Thanks

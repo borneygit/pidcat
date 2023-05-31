@@ -38,7 +38,11 @@ async fn main() {
 }
 
 async fn fetch(cli: Cli) {
-    let source = Arc::new(ADBSource::new(cli.device));
+    let source = Arc::new(ADBSource::new(if cli.device.is_empty() {
+        None
+    } else {
+        Some(cli.device)
+    }));
 
     let filter: ArcFilter = Arc::new(PidFilter::new(cli.process, None));
     let filter: ArcFilter = Arc::new(BufferFilter::new(cli.buffers, Some(filter)));
@@ -77,5 +81,5 @@ async fn spawn_adb_logcat_clear() -> Child {
     command.stdout(std::process::Stdio::piped());
     command.arg("logcat");
     command.arg("-c");
-    command.spawn().expect("Failed to execute adb logcat")
+    command.spawn().expect("Failed to execute adb logcat -c")
 }

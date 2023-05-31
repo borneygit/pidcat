@@ -12,7 +12,8 @@ pub(crate) struct TagFilter {
 }
 
 impl TagFilter {
-    pub fn new(tag: String, ignore: bool, filter: Option<Arc<dyn Filter>>) -> Self {
+    #[allow(dead_code)]
+    pub(crate) fn new(tag: String, ignore: bool, filter: Option<Arc<dyn Filter>>) -> Self {
         Self {
             filter,
             tag: tag.clone(),

@@ -10,7 +10,8 @@ pub(crate) struct BufferFilter {
 }
 
 impl BufferFilter {
-    pub fn new(buffers: Vec<String>, filter: Option<Arc<dyn Filter>>) -> Self {
+    #[allow(dead_code)]
+    pub(crate) fn new(buffers: Vec<String>, filter: Option<Arc<dyn Filter>>) -> Self {
         let mut s = Self {
             buffers,
             filter,

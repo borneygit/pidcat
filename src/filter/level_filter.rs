@@ -9,7 +9,8 @@ pub(crate) struct LevelFilter {
 }
 
 impl LevelFilter {
-    pub fn new(level: Level, filter: Option<Arc<dyn Filter>>) -> Self {
+    #[allow(dead_code)]
+    pub(crate) fn new(level: Level, filter: Option<Arc<dyn Filter>>) -> Self {
         Self { level, filter }
     }
 }
