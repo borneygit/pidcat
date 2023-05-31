@@ -12,14 +12,31 @@ pidcat toor
 
 ![ScreenShot](/asset/screen.png)
 
-# Install terminal
+# Install terminal by sourcecode
 First install the rust environment
 ```
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
+
+Download source
+```
+git clone https://github.com/borneygit/pidcat.git
+```
+```
+cd pidcat
+```
 Then use cargo to install pidcat
 ```
 cargo install --path .
+```
+
+# Install terminal by brew
+
+```
+brew tap borneygit/brew
+```
+```
+brew install borneygit/brew/pidcat
 ```
 
 # How to use terminal
