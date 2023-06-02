@@ -1,10 +1,9 @@
 use crate::cli::Cli;
-use crate::filter::{ArcFilter, BufferFilter, LevelFilter, PidFilter, RevertFilter, TagFilter};
+use crate::filter::{BufferFilter, Filter, LevelFilter, PidFilter, RevertFilter, TagFilter};
 use crate::sink::{FileSink, Sink, TerminalSink};
 use crate::source::{ADBSource, Source};
 use anyhow::Result;
 use futures::StreamExt;
-use std::sync::Arc;
 use tokio::process::{Child, Command};
 
 mod cli;
@@ -38,23 +37,26 @@ async fn main() {
 }
 
 async fn fetch(cli: Cli) {
-    let source = Arc::new(ADBSource::new(if cli.device.is_empty() {
+    let source = ADBSource::new(if cli.device.is_empty() {
         None
     } else {
         Some(cli.device)
-    }));
+    });
 
-    let filter: ArcFilter = Arc::new(PidFilter::new(cli.process, None));
-    let filter: ArcFilter = Arc::new(BufferFilter::new(cli.buffers, Some(filter)));
-    let filter: ArcFilter = Arc::new(LevelFilter::new(cli.level, Some(filter)));
-    let filter: ArcFilter = Arc::new(TagFilter::new(cli.tag, cli.ignore, Some(filter)));
-    let filter: ArcFilter = Arc::new(RevertFilter::new(cli.revert, cli.ignore, Some(filter)));
+    let filters: Vec<Box<dyn Filter>> = vec![
+        Box::new(PidFilter::new(cli.process)),
+        Box::new(BufferFilter::new(cli.buffers)),
+        Box::new(LevelFilter::new(cli.level)),
+        Box::new(TagFilter::new(cli.tag, cli.ignore)),
+        Box::new(RevertFilter::new(cli.revert, cli.ignore)),
+    ];
 
-    let mut sinks: Vec<Arc<dyn Sink>> = Vec::new();
-    sinks.push(Arc::new(TerminalSink::new(cli.color, cli.tag_width)));
+    let mut sinks: Vec<Box<dyn Sink>> = Vec::new();
+
+    sinks.push(Box::new(TerminalSink::new(cli.color, cli.tag_width)));
     if let Some(file) = cli.output {
         if let Ok(file) = FileSink::new(file).await {
-            sinks.push(Arc::new(file));
+            sinks.push(Box::new(file));
         }
     }
 
@@ -63,9 +65,15 @@ async fn fetch(cli: Cli) {
     while let Some(r) = logs.next().await {
         match r {
             Ok(log) => {
-                let l = { filter.filter(log).await };
+                let mut is_filter = false;
+                for filter in &filters {
+                    if filter.filter(&log).await {
+                        is_filter = true;
+                        break;
+                    }
+                }
 
-                if let Some(log) = l {
+                if !is_filter {
                     for sink in &sinks {
                         sink.write(log.clone()).await;
                     }

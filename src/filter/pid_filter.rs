@@ -3,12 +3,10 @@ use crate::log::Log;
 use async_trait::async_trait;
 use dashmap::DashSet;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
 use tokio::io::AsyncBufReadExt;
 use tokio::process::{Child, Command};
 
 pub(crate) struct PidFilter {
-    filter: Option<Arc<dyn Filter>>,
     process: DashSet<String>,
     pids: DashSet<String>,
     first_filter: AtomicBool,
@@ -16,9 +14,8 @@ pub(crate) struct PidFilter {
 
 impl PidFilter {
     #[allow(dead_code)]
-    pub(crate) fn new(process: Vec<String>, filter: Option<Arc<dyn Filter>>) -> Self {
+    pub(crate) fn new(process: Vec<String>) -> Self {
         Self {
-            filter,
             process: DashSet::from_iter(process.into_iter()),
             pids: DashSet::new(),
             first_filter: AtomicBool::new(true),
@@ -36,18 +33,9 @@ impl PidFilter {
 
 #[async_trait]
 impl Filter for PidFilter {
-    async fn filter(&self, mut log: Log) -> Option<Log> {
-        if let Some(f) = &self.filter {
-            let f = Arc::clone(f);
-            if let Some(r) = f.filter(log).await {
-                log = r;
-            } else {
-                return None;
-            }
-        }
-
+    async fn filter(&self, log: &Log) -> bool {
         if self.process.is_empty() {
-            return Some(log);
+            return false;
         }
 
         if self.first_filter.load(Ordering::Acquire) && self.pids.is_empty() {
@@ -102,15 +90,15 @@ impl Filter for PidFilter {
             _ => {}
         }
 
-        let mut r = None;
+        let mut r = true;
 
         if self.pids.contains(&log.pid) {
-            r = Some(log);
+            r = false;
         } else {
             for p in self.pids.iter() {
                 let ptr = p.key().as_str();
                 if log.is_events() && log.message.contains(ptr) {
-                    r = Some(log);
+                    r = false;
                     break;
                 }
             }

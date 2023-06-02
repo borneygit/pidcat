@@ -1,20 +1,17 @@
 use crate::filter::Filter;
 use crate::log::Log;
 use async_trait::async_trait;
-use std::sync::Arc;
 
 pub(crate) struct BufferFilter {
-    filter: Option<Arc<dyn Filter>>,
     buffers: Vec<String>,
     all: bool,
 }
 
 impl BufferFilter {
     #[allow(dead_code)]
-    pub(crate) fn new(buffers: Vec<String>, filter: Option<Arc<dyn Filter>>) -> Self {
+    pub(crate) fn new(buffers: Vec<String>) -> Self {
         let mut s = Self {
             buffers,
-            filter,
             all: false,
         };
 
@@ -26,26 +23,17 @@ impl BufferFilter {
 
 #[async_trait]
 impl Filter for BufferFilter {
-    async fn filter(&self, mut log: Log) -> Option<Log> {
-        if let Some(f) = &self.filter {
-            let f = Arc::clone(f);
-            if let Some(r) = f.filter(log).await {
-                log = r;
-            } else {
-                return None;
-            }
-        }
-
+    async fn filter(&self, log: &Log) -> bool {
         if self.all {
-            return Some(log);
+            return false;
         }
 
         for b in &self.buffers {
             if b == &log.buffer {
-                return Some(log);
+                return false;
             }
         }
 
-        None
+        true
     }
 }

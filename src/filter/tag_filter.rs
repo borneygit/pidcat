@@ -3,19 +3,16 @@ use crate::log::Log;
 use anyhow::Result;
 use async_trait::async_trait;
 use regex::{Error, Regex, RegexBuilder};
-use std::sync::Arc;
 
 pub(crate) struct TagFilter {
-    filter: Option<Arc<dyn Filter>>,
     tag: String,
     re: Result<Regex, Error>,
 }
 
 impl TagFilter {
     #[allow(dead_code)]
-    pub(crate) fn new(tag: String, ignore: bool, filter: Option<Arc<dyn Filter>>) -> Self {
+    pub(crate) fn new(tag: String, ignore: bool) -> Self {
         Self {
-            filter,
             tag: tag.clone(),
             re: RegexBuilder::new(&tag).case_insensitive(ignore).build(),
         }
@@ -24,28 +21,19 @@ impl TagFilter {
 
 #[async_trait]
 impl Filter for TagFilter {
-    async fn filter(&self, mut log: Log) -> Option<Log> {
-        if let Some(f) = &self.filter {
-            let f = Arc::clone(f);
-            if let Some(r) = f.filter(log).await {
-                log = r;
-            } else {
-                return None;
-            }
-        }
-
+    async fn filter(&self, log: &Log) -> bool {
         if self.tag.is_empty() {
-            return Some(log);
+            return false;
         }
 
         if let Ok(re) = &self.re {
             if re.is_match(&log.tag) || re.is_match(&log.message) {
-                Some(log)
+                false
             } else {
-                None
+                true
             }
         } else {
-            Some(log)
+            false
         }
     }
 }
