@@ -14,6 +14,7 @@ lazy_static! {
         u8::from_str_radix(&"#ffffff"[3..5], 16).unwrap(),
         u8::from_str_radix(&"#ffffff"[5..7], 16).unwrap()
     );
+
     static ref INFO: Color = Color(
         u8::from_str_radix(&"#05d702"[1..3], 16).unwrap(),
         u8::from_str_radix(&"#05d702"[3..5], 16).unwrap(),
