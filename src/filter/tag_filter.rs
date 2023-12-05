@@ -4,14 +4,14 @@ use anyhow::Result;
 use async_trait::async_trait;
 use regex::{Error, Regex, RegexBuilder};
 
-pub(crate) struct TagFilter {
+pub struct TagFilter {
     tag: String,
     re: Result<Regex, Error>,
 }
 
 impl TagFilter {
     #[allow(dead_code)]
-    pub(crate) fn new(tag: String, ignore: bool) -> Self {
+    pub fn new(tag: String, ignore: bool) -> Self {
         Self {
             tag: tag.clone(),
             re: RegexBuilder::new(&tag).case_insensitive(ignore).build(),

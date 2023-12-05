@@ -7,13 +7,13 @@ use tokio::fs::{File, OpenOptions};
 use tokio::io::AsyncWriteExt;
 use tokio::task;
 
-pub(crate) struct FileSink {
+pub struct FileSink {
     file: File,
 }
 
 impl FileSink {
     #[allow(dead_code)]
-    pub(crate) async fn new(file: PathBuf) -> Result<Self> {
+    pub async fn new(file: PathBuf) -> Result<Self> {
         let f = OpenOptions::new()
             .write(true)
             .truncate(true)

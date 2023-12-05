@@ -2,13 +2,13 @@ use crate::filter::Filter;
 use crate::log::{Level, Log};
 use async_trait::async_trait;
 
-pub(crate) struct LevelFilter {
+pub struct LevelFilter {
     level: Level,
 }
 
 impl LevelFilter {
     #[allow(dead_code)]
-    pub(crate) fn new(level: Level) -> Self {
+    pub fn new(level: Level) -> Self {
         Self { level }
     }
 }

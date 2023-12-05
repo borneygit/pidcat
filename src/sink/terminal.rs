@@ -16,49 +16,49 @@ lazy_static! {
 
 macro_rules! error {
     ($s:expr) => {
-        println!("{}", $s.truecolor(ERROR.0, ERROR.1, ERROR.2))
+        format!("{}", $s.truecolor(ERROR.0, ERROR.1, ERROR.2))
     };
 }
 
 macro_rules! warn {
     ($s:expr) => {
-        println!("{}", $s.truecolor(WARNING.0, WARNING.1, WARNING.2))
+        format!("{}", $s.truecolor(WARNING.0, WARNING.1, WARNING.2))
     };
 }
 
 macro_rules! info {
     ($s:expr) => {
-        println!("{}", $s.truecolor(INFO.0, INFO.1, INFO.2))
+        format!("{}", $s.truecolor(INFO.0, INFO.1, INFO.2))
     };
 }
 
 macro_rules! debug {
     ($s:expr) => {
-        println!("{}", $s.truecolor(DEBUG.0, DEBUG.1, DEBUG.2))
+        format!("{}", $s.truecolor(DEBUG.0, DEBUG.1, DEBUG.2))
     };
 }
 
 macro_rules! verbose {
     ($s:expr) => {
-        println!("{}", $s.truecolor(VERBOSE.0, VERBOSE.1, VERBOSE.2))
+        format!("{}", $s.truecolor(VERBOSE.0, VERBOSE.1, VERBOSE.2))
     };
 }
 
-pub(crate) struct TerminalSink {
+pub struct TerminalSink {
     color: bool,
     tag_width: usize,
 }
 
 impl TerminalSink {
     #[allow(dead_code)]
-    pub(crate) fn new(color: String, tag_width: usize) -> Self {
+    pub fn new(color: String, tag_width: usize) -> Self {
         Self {
             color: color == "always" || color == "auto",
             tag_width,
         }
     }
 
-    fn terminal_print(&self, level: &str, s: String) {
+    fn format_by_level(&self, level: &str, s: &str) -> String {
         if self.color {
             match level {
                 "V" => verbose!(s),
@@ -68,7 +68,9 @@ impl TerminalSink {
                 "E" => error!(s),
                 "F" => error!(s),
                 _ => verbose!(s),
-            };
+            }
+        } else {
+            s.to_string()
         }
     }
 }
@@ -81,35 +83,37 @@ impl Sink for TerminalSink {
             tag.truncate(self.tag_width);
         }
         let message = &log.message.split('\n').collect::<Vec<&str>>();
-        for (i, s) in message.iter().enumerate() {
+        for (i, &s) in message.iter().enumerate() {
             let s = if i == 0 {
+                let level = format!(" {} ", self.format_by_level(&log.level, &log.level))
+                    .on_truecolor(88, 88, 88);
+                let tag = self.format_by_level(
+                    &log.level,
+                    &format!("{:width$}", tag, width = self.tag_width),
+                );
                 format!(
-                    "{:11} {:>5} {:<5} {:width$} {:^3} {}",
+                    "{:11} {:>5}-{:<5} {} {} {}",
                     log.time,
                     log.pid,
                     log.tid,
                     tag,
-                    log.level.on_truecolor(88, 88, 88),
-                    s,
-                    width = self.tag_width
+                    level,
+                    self.format_by_level(&log.level, s),
                 )
             } else {
+                let level = log.level.on_truecolor(88, 88, 88);
                 format!(
-                    "{:12} {:>5} {:<5} {:width$} {:^3} {}",
+                    "{:12} {:>5}-{:<5} {:width$} {:^3} {}",
                     "",
                     "",
                     "",
                     " ",
-                    log.level.on_truecolor(88, 88, 88),
-                    s,
+                    level,
+                    self.format_by_level(&log.level, s),
                     width = self.tag_width
                 )
             };
-            if self.color {
-                self.terminal_print(log.level.as_str(), s);
-            } else {
-                println!("{}", s);
-            }
+            println!("{}", s);
         }
     }
 }

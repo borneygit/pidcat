@@ -73,8 +73,7 @@ impl Source for ADBSource {
                     }
 
                     map.insert("buffer", b);
-                } else {
-                    if let Some(cap) = re.captures(&line) {
+                } else if let Some(cap) = re.captures(&line) {
                         if map.contains_key("tag") {
                             let log = Log {
                                 tag: map.remove("tag").unwrap(),
@@ -99,14 +98,11 @@ impl Source for ADBSource {
                         let content = content.splitn(2, '/').collect::<Vec<&str>>();
                         map.insert("level", content[0].to_string());
                         map.insert("tag", content[1].to_string());
-                    } else {
-                        if let Some(msg) = map.get_mut("message") {
-                            msg.push('\n');
+                } else if let Some(msg) = map.get_mut("message") {
+                    msg.push('\n');
                             msg.push_str(line.trim_end());
-                        } else {
+                } else {
                             map.insert("message", line.trim_end().to_string());
-                        }
-                    }
                 }
                 line.clear();
             }

@@ -35,7 +35,9 @@ pub struct Log {
 ///
 /// #Examples
 /// ```no_run
-/// let source: = ADBSource::new(None);
+/// use futures::StreamExt;
+/// use pidcat::source::{ADBSource, Source};
+/// let source = ADBSource::new(None);
 /// let mut logs = source.source().await;
 /// while let Some(r) = logs.next().await {
 ///     match r {
@@ -53,27 +55,27 @@ pub type LogStream = Pin<Box<dyn Stream<Item = Result<Log, Box<dyn Error + Send>
 impl Log {
     /// log is main buffer
     pub fn is_main(&self) -> bool {
-        return self.buffer == "main";
+        self.buffer == "main"
     }
 
     /// log is system buffer
     pub fn is_system(&self) -> bool {
-        return self.buffer == "system";
+        self.buffer == "system"
     }
 
     /// log is crash buffer
     pub fn is_crash(&self) -> bool {
-        return self.buffer == "crash";
+        self.buffer == "crash"
     }
 
     /// log is events buffer
     pub fn is_events(&self) -> bool {
-        return self.buffer == "events";
+        self.buffer == "events"
     }
 
     /// log is radio buffer
     pub fn is_radio(&self) -> bool {
-        return self.buffer == "radio";
+        self.buffer == "radio"
     }
 }
 
@@ -88,7 +90,7 @@ impl Display for Log {
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
-pub(crate) enum Level {
+pub enum Level {
     V,
     D,
     I,

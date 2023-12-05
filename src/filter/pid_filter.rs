@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::io::AsyncBufReadExt;
 use tokio::process::{Child, Command};
 
-pub(crate) struct PidFilter {
+pub struct PidFilter {
     process: DashSet<String>,
     pids: DashSet<String>,
     first_filter: AtomicBool,
@@ -14,7 +14,7 @@ pub(crate) struct PidFilter {
 
 impl PidFilter {
     #[allow(dead_code)]
-    pub(crate) fn new(process: Vec<String>) -> Self {
+    pub fn new(process: Vec<String>) -> Self {
         Self {
             process: DashSet::from_iter(process.into_iter()),
             pids: DashSet::new(),

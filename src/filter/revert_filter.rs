@@ -3,14 +3,14 @@ use crate::log::Log;
 use async_trait::async_trait;
 use regex::{Error, Regex, RegexBuilder};
 
-pub(crate) struct RevertFilter {
+pub struct RevertFilter {
     revert: String,
     re: Result<Regex, Error>,
 }
 
 impl RevertFilter {
     #[allow(dead_code)]
-    pub(crate) fn new(revert: String, ignore: bool) -> Self {
+    pub fn new(revert: String, ignore: bool) -> Self {
         Self {
             revert: revert.clone(),
             re: RegexBuilder::new(&revert).case_insensitive(ignore).build(),

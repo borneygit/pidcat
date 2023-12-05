@@ -2,14 +2,14 @@ use crate::filter::Filter;
 use crate::log::Log;
 use async_trait::async_trait;
 
-pub(crate) struct BufferFilter {
+pub struct BufferFilter {
     buffers: Vec<String>,
     all: bool,
 }
 
 impl BufferFilter {
     #[allow(dead_code)]
-    pub(crate) fn new(buffers: Vec<String>) -> Self {
+    pub fn new(buffers: Vec<String>) -> Self {
         let mut s = Self {
             buffers,
             all: false,

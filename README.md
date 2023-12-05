@@ -107,7 +107,7 @@ Options:
 add dep for Cargo.toml
 ```
 [dependencies]
-pidcat="0.2.0"
+pidcat="0.2.1"
 ```
 You can use the following code to capture the adb logcat logs and process them twice according to your needs
 ```rust
